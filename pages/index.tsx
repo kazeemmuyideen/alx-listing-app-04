@@ -1,49 +1,50 @@
-import { PROPERTYLISTINGSAMPLE } from "@/constants";
-import { PropertyProps } from "@/interfaces";
-import PropertyCard from "@/components/common/PropertyCard";
-import Pill from "@/components/common/Pill";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import PropertyCard from "../components/property/PropertyCard"; 
 
-const FILTERS = [
-  "Top Villa",
-  "Self Checkin",
-  "Beachfront",
-  "Private Pool",
-  "Free Parking",
-  "Pet Friendly",
-];
+interface Property {
+  id: number;
+  title: string;
+  description: string;
+  price: number;
+  image: string;
+  location: string;
+}
 
-const Home: React.FC = () => {
+export default function Home() {
+  const [properties, setProperties] = useState<Property[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchProperties = async () => {
+      try {
+        const response = await axios.get("http://localhost:5000/properties");
+        setProperties(response.data);
+      } catch (err) {
+        console.error("Error fetching properties:", err);
+        setError("Failed to load properties.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProperties();
+  }, []);
+
+  if (loading) {
+    return <p className="text-center mt-10">Loading...</p>;
+  }
+
+  if (error) {
+    return <p className="text-center mt-10 text-red-500">{error}</p>;
+  }
+
   return (
-    <>
-      <section
-        className="h-[60vh] bg-cover bg-center flex items-center justify-center text-white"
-        style={{ backgroundImage: "url('https://example.com/hero.jpg')" }}
-      >
-        <div className="text-center">
-          <h1 className="text-4xl md:text-6xl font-bold">
-            Find your favorite place here!
-          </h1>
-          <p className="text-xl mt-4">
-            The best prices for over 2 million properties worldwide.
-          </p>
-        </div>
-      </section>
-
-      <section className="p-6">
-        <div className="flex flex-wrap gap-3 mb-6">
-          {FILTERS.map((filter) => (
-            <Pill key={filter} label={filter} />
-          ))}
-        </div>
-
-        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-          {PROPERTYLISTINGSAMPLE.map((property) => (
-            <PropertyCard key={property.name} {...property} />
-          ))}
-        </div>
-      </section>
-    </>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
+      {properties.map((property) => (
+        <PropertyCard key={property.id} property={property} />
+      ))}
+    </div>
   );
-};
-
-export default Home;
+}
