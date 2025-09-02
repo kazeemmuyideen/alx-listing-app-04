@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import axios from "axios";
 import { useState, useEffect } from "react";
-import PropertyDetail from "./PropertyDetail";
+import PropertyDetail from "../../components/property/PropertyDetail";
 
 interface Property {
   id: string;
