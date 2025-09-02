@@ -1,4 +1,4 @@
-import ReviewSection from "../../pages/property/ReviewSection";
+import ReviewSection from "../../components/property/ReviewSection"
 
 interface PropertyDetailProps {
   property: {
